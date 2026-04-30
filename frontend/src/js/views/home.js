@@ -13,15 +13,21 @@ var conf = {
 if (window.innerWidth < 600) {
     conf.scale = 0.5;
 }
+
 UnicornStudio.addScene(conf)
     .then((scene) => {
         document.body.classList.add("loaded");
+        const el = document.getElementById("unicorn");
+        window.addEventListener("resize", () => {
+            el.style.width = window.innerWidth + "px";
+            scene.resize();
+            scene.requestSceneRender?.();
+        });
     })
     .catch((err) => {
         console.error(err);
         document.body.classList.add("loaded");
     });
-
 
 const anim = lottie.loadAnimation({
     container: document.getElementById("logo-anim"),
@@ -30,6 +36,7 @@ const anim = lottie.loadAnimation({
     loop: false,
     path: "/public/osekai-lottie.json",
 });
+
 anim.addEventListener("config_ready", () => {
     anim.setSpeed(0.8);
     anim.play();
