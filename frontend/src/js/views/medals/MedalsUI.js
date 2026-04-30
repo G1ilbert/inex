@@ -260,7 +260,7 @@ export class MedalsUI {
         MedalsUI.extra_AdoptionGraph = new Graph(adoptionGraphContainer);
 
 
-        MedalsUI.extra_AdoptionGraph.renderTooltip = d => `<small>${d.date}</small><h1>${d.value} users</h1><h3>(+${d.earned})</h3>`;
+        MedalsUI.extra_AdoptionGraph.renderTooltip = d => `<small>${d.date}</small><h1>${d.value} users (+${d.earned})</h1>`;
         MedalsUI.extra_AdoptionGraph.H = 150;
         MedalsUI.extra_AdoptionGraph.load(adoptionData);
 

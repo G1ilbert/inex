@@ -542,6 +542,12 @@ body {
         border: 1px solid color-mix(in srgb, var(--col-l6) 50%, transparent);
         .graph-outer {
             height: 150px;
+            .graph-tooltip {
+                flex-direction: row !important;
+                h1 {
+                    font-size: 18px;
+                }
+            }
         }
         h3 {
             font-size: 20px;
