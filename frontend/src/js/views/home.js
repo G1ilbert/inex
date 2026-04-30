@@ -42,24 +42,24 @@ function remeasureUnicornCanvasToViewport() {
     }
 }
 
-function scheduleUnicornRemeasureAcrossFrames() {
+function scheduleUnicornRefresh() {
     requestAnimationFrame(remeasureUnicornCanvasToViewport);
     requestAnimationFrame(() => requestAnimationFrame(remeasureUnicornCanvasToViewport));
     setTimeout(remeasureUnicornCanvasToViewport, 200);
 }
 
-window.addEventListener("focus", scheduleUnicornRemeasureAcrossFrames);
+window.addEventListener("focus", scheduleUnicornRefresh);
 document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") scheduleUnicornRemeasureAcrossFrames();
+    if (document.visibilityState === "visible") scheduleUnicornRefresh();
 });
-window.addEventListener("pageshow", scheduleUnicornRemeasureAcrossFrames);
+window.addEventListener("pageshow", scheduleUnicornRefresh);
 
 const unicornContainer = document.getElementById("unicorn");
 if (unicornContainer && typeof ResizeObserver !== "undefined") {
     new ResizeObserver(remeasureUnicornCanvasToViewport).observe(unicornContainer);
 }
 
-const logoAnimation = lottie.loadAnimation({
+const homePageAnimation = lottie.loadAnimation({
     container: document.getElementById("logo-anim"),
     renderer: "svg",
     autoplay: false,
@@ -67,9 +67,9 @@ const logoAnimation = lottie.loadAnimation({
     path: "/public/osekai-lottie.json",
 });
 
-logoAnimation.addEventListener("config_ready", () => {
-    logoAnimation.setSpeed(0.8);
-    logoAnimation.play();
+homePageAnimation.addEventListener("config_ready", () => {
+    homePageAnimation.setSpeed(0.8);
+    homePageAnimation.play();
     document.getElementById("home-welcome").classList.add("lottie-running");
     setTimeout(() => {
         document.getElementById("home-welcome").classList.add("lottie-done");
