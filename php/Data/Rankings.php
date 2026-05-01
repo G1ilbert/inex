@@ -61,7 +61,7 @@ ORDER BY Rankings_Users.Count_Medals DESC";
                 break;
 
             case "medals_rarity":
-                $sql = "SELECT * FROM Medals_Data ORDER BY Frequency";
+                $sql = "SELECT * FROM Medals_Data ORDER BY Count_Achieved_By";
                 break;
 
             case "pp":
