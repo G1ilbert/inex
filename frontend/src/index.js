@@ -7,6 +7,7 @@ import {RoleBadge} from "./js/utils/dom";
 import {GetSetting, SetSettings} from "./js/utils/usersettings";
 import {renderDebugTimings} from "./js/layout/debug";
 import {InitDropdowns} from "./js/ui/dropdown";
+import LoadMore from "./js/ui/notifications";
 
 
 window.loader = createLazyLoadInstance();
@@ -110,3 +111,15 @@ for (var item of document.querySelectorAll("[setting-item]")) {
     }
 }
 window.debug = renderDebugTimings;
+
+let notifButton = document.getElementById("notif-button");
+if (notifButton != null) {
+    let notifOverlay = document.getElementById("notifications-overlay");
+    notifButton.addEventListener("click", () => {
+        setTimeout(() => {
+            if(notifOverlay.classList.contains("jsdropdown-open")) {
+                LoadMore();
+            }
+        }, 2)
+    })
+}

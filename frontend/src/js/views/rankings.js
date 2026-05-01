@@ -108,7 +108,9 @@ function createTableBody(columns, data) {
             const colData = colDef.data(item, currentOptions);
 
             if (columnTypes[colDef.type]) {
-                td.appendChild(columnTypes[colDef.type](colData));
+                let el = columnTypes[colDef.type](colData);
+                if(colDef.fill === true) td.classList.add("fill");
+                td.appendChild(el);
             } else {
                 td.textContent = "Unknown column type";
             }
@@ -136,6 +138,18 @@ let isLoading = false;
 
 async function LoadPage(page = 0, fromPagination = true) {
     if (!currentCategory || isLoading) return;
+
+    const categoryType = currentCategory.value;
+    if (categoryType.options) {
+        for (let key in categoryType.options) {
+            const optDef = categoryType.options[key];
+            const selectedVal = currentOptions[key];
+            if (optDef.options[selectedVal]?.requiresLogin && !loggedIn) {
+                showLoginRequired();
+                return;
+            }
+        }
+    }
 
     isLoading = true;
     currentPage = page;
@@ -209,6 +223,12 @@ function createToggleOption(key, optDef) {
         input.addEventListener("change", (e) => {
             currentOptions[key] = e.target.value;
             autoParam(key, e.target.value, getDefaultOption(optDef));
+
+            if (optDef.options[e.target.value]?.requiresLogin && !loggedIn) {
+                showLoginRequired();
+                return;
+            }
+
             LoadPage(0, false);
         });
 
@@ -221,6 +241,15 @@ function createToggleOption(key, optDef) {
     }
 
     return div;
+}
+
+function showLoginRequired() {
+    const tableArea = document.getElementById("ranking-table-area");
+    tableArea.innerHTML = "";
+    tableArea.appendChild(D2.Div("ranking-log-in", () => {
+        D2.Text("p", "You need to log in to view this ranking!");
+        D2.Link("Log In", "button cta", "/login");
+    }));
 }
 
 function InitializeOptions() {

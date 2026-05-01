@@ -2,10 +2,29 @@
 * {
     --hue: 200 !important;
 }
+
 .list__bar, .list__content {
     width: 100vw;
     max-width: 1300px !important;
     margin: 0px auto;
+}
+
+.ranking-log-in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+    padding: 20px;
+    min-height: 200px;
+}
+
+.rankings__outer:has(*.ranking-log-in) {
+    pagination-el {
+        opacity: 0;
+        pointer-events: none;
+    }
 }
 
 .ranking-table {
@@ -16,11 +35,13 @@
 
     table-layout: auto;
 }
+
 .ranking-table thead {
     top: 70px;
     background: var(--col-base);
     z-index: 1;
 }
+
 @-moz-document url-prefix() {
     /* only on firefox - doesn't work under chromium-based */
     .ranking-table thead {
@@ -28,6 +49,7 @@
         top: 70px;
     }
 }
+
 .ranking-table thead th {
     color: inherit;
     font-weight: 600;
@@ -38,20 +60,24 @@
 
 .ranking-table tbody td {
     padding: 12px 16px;
+
     border-bottom: none;
     vertical-align: middle;
     background-color: var(--col-l1);
     white-space: nowrap;
     min-width: 200px;
+
     &:first-child {
         border-top-left-radius: var(--border-radius);
         border-bottom-left-radius: var(--border-radius);
     }
+
     &:last-child {
         border-top-right-radius: var(--border-radius);
         border-bottom-right-radius: var(--border-radius);
     }
 }
+
 .ranking-table tbody:has(.coltype-ranktext) td {
     &:nth-child(2) {
         border-top-left-radius: var(--border-radius);
@@ -70,34 +96,53 @@
 }
 
 
-
 .coltype-user {
     display: flex;
     align-items: center;
     gap: 8px;
+
     img {
         height: 32px;
         border-radius: 90px;
     }
+
     .flag {
         height: 24px;
     }
 }
+
 .coltype-medal {
     display: flex;
     align-items: center;
     gap: 8px;
+
+    color: var(--col-l90);
+
     img {
         height: 32px;
     }
+
+
+    h3 {
+        font-size: 16px;
+    }
+    p {
+        font-size: 13px;
+        text-wrap: wrap;
+    }
 }
+
 .ranking-table tbody td:has(.coltype-ranktext) {
     min-width: 20px !important;
     background: transparent !important;
     position: relative;
+
     .coltype-ranktext {
         position: absolute;
-        top: 0; left: 0; bottom: 0; right: 4px;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 4px;
         border-radius: var(--border-radius);
         background: var(--col-l2);
         display: flex;
@@ -107,21 +152,25 @@
         font-size: 16px;
     }
 }
+
 .ranking-table tbody tr:nth-child(even) td {
-    .coltype-ranktext{
+    .coltype-ranktext {
         background: var(--col-l3);
     }
 }
+
 .list__bar-options {
 
-    >* {
+    > * {
         flex: 1;
     }
+
     pagination-el {
         flex: 1.4;
     }
+
     searchable-dropdown {
-         .dropdown{
+        .dropdown {
             min-width: 150px;
             max-width: 150px !important;
         }
@@ -160,10 +209,12 @@
     gap: 10px 40px;
     width: 100%;
     flex-wrap: wrap;
+
     > div {
         display: flex;
         align-items: center;
     }
+
     p {
         font-weight: 900;
         padding-right: 12px;
@@ -171,11 +222,13 @@
         border-right: 1px solid var(--col-l6);
         height: 100%;
     }
+
     a {
         margin-left: 8px;
         background: var(--col-l2);
         border-radius: 90px;
         padding: 8px 16px;
+
         &.active {
             background: var(--col-l90);
             color: var(--col-l2);
@@ -199,26 +252,35 @@
     background: var(--col-l2);
     border: 1px solid var(--col-l4);
     border-radius: 90px;
+
     > div {
         position: relative;
         height: 24px;
         background: var(--maincol);
         border-radius: 90px;
         overflow: hidden;
+
         &:before {
             border-radius: 90px;
             position: absolute;
             content: "";
-            top: 0; left: 0; bottom: 0; right: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
             background: linear-gradient(to bottom, #000, #fff);
             mix-blend-mode: overlay;
             opacity: 0.2;
         }
+
         &:after {
             border-radius: 90px;
             position: absolute;
             content: "";
-            top: 0; left: 0; bottom: 0; right: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
             background-image: linear-gradient(to right, #000, #fff0, #000);
             mix-blend-mode: overlay;
             opacity: 1;
@@ -229,14 +291,17 @@
         }
 
     }
+
     &:not(.col100club) {
-        >div {
+        > div {
             mask: linear-gradient(to right, #fff6, #fffe 70%, #fff);
         }
     }
+
     p {
         position: absolute;
-        top: 50%; left: 50%;
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -50%);
         font-size: 14px;
         font-weight: 900;
@@ -244,8 +309,59 @@
         z-index: 0;
     }
 }
+
 td:has(.coltype-medalclub) {
     width: 100%;
+}
+
+td:has(*.coltype-check) {
+    min-width: 50px !important;
+    max-width: 50px !important;
+
+    svg {
+        stroke: #5AFFC3;
+    }
+
+    .coltype-check:has(.lucide-x) {
+        svg {
+            stroke: #dd4a68aa;
+        }
+    }
+
+    .coltype-check:has(.lucide-info) {
+        svg {
+            stroke: #fffa;
+        }
+    }
+}
+
+.coltype-text p {
+    white-space: nowrap;
+
+    i, svg {
+        width: 18px;
+        height: 18px;
+        min-width: 18px;
+        margin-right: 5px;
+        display: flex;
+        font-size: 18px;
+        color: var(--col-text-l2);
+    }
+    display: flex;
+    align-items: center;
+
+}
+td:has(*.coltype-text-short) {
+    width: 100%;
+    min-width: 0;
+
+    p {
+        text-wrap: wrap;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        font-size: 15px;
+        opacity: 0.8;
+    }
 }
 
 .coltype-scoregraph {
@@ -253,6 +369,7 @@ td:has(.coltype-medalclub) {
     height: 12px;
     display: flex;
     gap: 4px;
+
     > div {
         background: hsl(var(--hue), 90%, 40%);
         display: flex;
@@ -265,18 +382,26 @@ td:has(.coltype-medalclub) {
     }
 }
 
+@media (min-width: 1000px) {
+
+    .ranking-table td.fill {
+        width: 100%;
+    }
+}
 @media (max-width: 1000px) {
     .ranking-table,
     .ranking-table tbody,
     .ranking-table tbody tr,
     .ranking-table tbody td {
         display: block;
+
     }
 
     /* hide the header row since labels won't align anymore */
     .ranking-table thead {
         display: none;
     }
+
     .ranking-table {
         padding: 20px;
     }
@@ -306,11 +431,14 @@ td:has(.coltype-medalclub) {
     .coltype-ranktext {
         background: transparent !important;
     }
+
     td:has(.coltype-ranktext) {
         width: 50px;
     }
+
     td:not(:has(.coltype-ranktext)) {
         min-width: 100px !important;
+
         [tooltip-cont]:before {
             content: attr(tooltip-cont) ":";
             color: white;

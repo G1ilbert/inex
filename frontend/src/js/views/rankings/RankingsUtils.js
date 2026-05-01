@@ -89,20 +89,30 @@ export const types = {
         "columns": [
             helpers.rank,
             {
+                "type": "check",
+                "data": (data) => {
+                    return {
+                        "label": " ",
+                        "content": data.Achieved
+                    }
+                }
+            },
+            {
                 "type": "medal",
                 "data": (data) => {
                     return {
                         "label": null,
                         "content": data
                     }
-                }
+                },
+                "fill": true
             },
             {
                 "type": "text",
                 "data": (data) => {
                     return {
-                        "label": "Description",
-                        "content": data.Description
+                        "label": "Group",
+                        "content": `<i class="icon-gamemode-${data.Gamemode}"></i>` + data.Grouping
                     }
                 }
             },
@@ -111,7 +121,16 @@ export const types = {
                 "data": (data) => {
                     return {
                         "label": "held by",
-                        "content": data.Frequency*100 + "% (" + data.Count_Achieved_By + " users)"
+                        "content": "<strong>" + (data.Frequency * 100).toFixed(6) + "%</strong>"
+                    }
+                }
+            },
+            {
+                "type": "text",
+                "data": (data) => {
+                    return {
+                        "label": "users",
+                        "content": data.Count_Achieved_By
                     }
                 }
             }
@@ -368,7 +387,12 @@ export const columnTypes = {
     },
     "text": (data) => {
         return D2.Div("coltype-text", () => {
-            D2.Text("p", data.content);
+            D2.StyledText("p", data.content);
+        })
+    },
+    "text-short": (data) => {
+        return D2.Div("coltype-text coltype-text-short", () => {
+            D2.StyledText("p", data.content);
         })
     },
     "ranktext": (data) => {
@@ -379,7 +403,10 @@ export const columnTypes = {
     "medal": (data) => {
         let el = D2.CustomPlus("a", "coltype-medal", {href: "/medals/" + encodeURIComponent(data.content.Name)}, () => {
             D2.Image("medal", "/assets/osu/web/" + data.content.Link)
-            D2.Text("p", data.content.Name);
+            D2.Div("medal-name", () => {
+                D2.Text("h3", data.content.Name);
+                if(data.content.Description) D2.Text("p", data.content.Description);
+            })
         })
         if (data.label) el.setAttribute("tooltip", data.label ?? null)
         if (data.label) el.setAttribute("tooltip-cont", data.label ?? null)
@@ -407,8 +434,18 @@ export const columnTypes = {
             } else {
                 // weight each mode by 1/spp_gain_per_1pp — modes that contribute most efficiently
                 // (closest to mean) get a larger bar, modes dragging the score down get smaller
-                let raw = [s, t, c, m]
-                let keys = ["standard", "taiko", "catch", "mania"]
+                let raw = [
+                    s,
+                    t,
+                    c,
+                    m
+                ]
+                let keys = [
+                    "standard",
+                    "taiko",
+                    "catch",
+                    "mania"
+                ]
 
                 function spp(v) {
                     let total = v.reduce((a, b) => a + b, 0)
@@ -432,10 +469,22 @@ export const columnTypes = {
             if (!total) total = 1
 
             let modes = [
-                ["standard", "gamemode-osu"],
-                ["taiko", "gamemode-taiko"],
-                ["catch", "gamemode-catch"],
-                ["mania", "gamemode-mania"]
+                [
+                    "standard",
+                    "gamemode-osu"
+                ],
+                [
+                    "taiko",
+                    "gamemode-taiko"
+                ],
+                [
+                    "catch",
+                    "gamemode-catch"
+                ],
+                [
+                    "mania",
+                    "gamemode-mania"
+                ]
             ]
 
             for (let [k, cls] of modes) {
@@ -452,5 +501,29 @@ export const columnTypes = {
             inner.style.width = (data.content) + "%";
             D2.Text("p", data.content + "%");
         })
+    },
+    "check": (data) => {
+        if(loggedIn) {
+            let el = D2.Div("coltype-check tooltip", () => {
+                if (data.content) {
+                    D2.Icon("check")
+                } else {
+                    D2.Icon("x")
+                }
+            })
+            if(data.content) {
+                el.setAttribute("tooltip", "You have this medal!");
+            } else {
+                el.setAttribute("tooltip", "You don't have this medal yet.");
+            }
+            return el;
+        }
+        else {
+            let x = D2.Div("coltype-check tooltip", () => {
+                D2.Icon("info")
+            })
+            x.setAttribute("tooltip", "Log in to see if you have this medal!");
+            return x;
+        }
     }
 }

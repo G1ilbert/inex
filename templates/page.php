@@ -1,14 +1,28 @@
 <?php
+
 $nav = [
-    '/' => 'home',
-    '/medals' => 'medals',
-    '/badges' => 'badges',
-    '/rankings' => 'rankings',
-    'https://osekai.net/profiles' => 'profiles'
+        '/' => ['label' => 'home', 'icon' => '/public/img/branding/app/home.svg'],
+        '/medals' => ['label' => 'medals', 'icon' => '/public/img/branding/app/medals.svg'],
+        '/badges' => ['label' => 'badges', 'icon' => '/public/img/branding/app/badges.svg'],
+        '/rankings' => ['label' => 'rankings', 'icon' => '/public/img/branding/app/rankings.svg'],
+        'https://osekai.net/profiles' => ['label' => 'profiles', 'icon' => '/public/img/branding/app/profiles.svg'],
 ];
 
-$current = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-$current = $current === '' ? '/' : $current;
+$current = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/') ?: '/';
+
+foreach ($nav as $url => $item) {
+    $active = $url === '/' ? $current === '/' : str_starts_with($current, $url);
+    if ($active) {
+        $nav[$url]['active'] = true;
+        $nav[$url]['icon'] = str_replace('app', 'app-fill', $item['icon']);
+    }
+}
+
+
+$unreadNotifs=  0;
+if(\Database\Session::LoggedIn()) {
+    $unreadNotifs = Data\Notifications\Utils::UnreadCount();
+}
 
 use Database\Session; ?>
 
@@ -17,23 +31,59 @@ use Database\Session; ?>
     <div class="navbar-upper">
         <div class="navbar-left">
             <a href="/">
-                <img src="/public/img/branding/icon_monochrome.svg">
+                <img src="/public/img/branding/icon_monochrome.svg" class="logo">
             </a>
-            <div class="navbar-links">
-                <?php foreach ($nav as $url => $label) {
-                    ?>
-                    <a href="<?= $url ?>" class="<?= ($url === '/' ? $current === '/' : str_starts_with($current, $url)) ? 'active' : '' ?>"><?= $label ?></a>
+            <div class="navbar-links desktop">
+                <?php foreach ($nav as $url => $item) { ?>
+                    <a href="<?= $url ?>" class="<?= !empty($item['active']) ? 'active' : '' ?>">
+                        <?php if ($item['icon']) { ?><img src="<?= $item['icon'] ?>" alt=""><?php } ?>
+                        <?= $item['label'] ?>
+                    </a>
                 <?php } ?>
+            </div>
+            <div class="navbar-links mobile">
+                <div class="navbar-burger" dropdown-button="apps-dropdown">
+                    <i data-lucide="menu"></i> Apps
+                </div>
             </div>
         </div>
         <div class="navbar-right">
             <div class="navbar-pfp-container">
-                <a href="https://github.com/osekai/inex/issues/new" target="_blank" tooltip="report a bug" class="navbar-right-button"><i data-lucide="bug"></i></a>
-                <a class="navbar-right-button" tooltip="settings" dropdown-button="settings-dropdown">
-                    <i data-lucide="cog"></i>
-                </a>
+                <a href="https://github.com/osekai/inex/issues/new" target="_blank" tooltip="report a bug"
+                   class="navbar-right-button"><i data-lucide="bug"></i></a>
+                <?php
+                if (Session::LoggedIn()) {
+                    ?>
 
-                <div dropdown-mode="legacy" dropdown="settings-dropdown" class="navbar-pfp-dropdown navbar-pfp-dropdown-hidden">
+                    <a class="navbar-right-button" tooltip="settings" dropdown-button="settings-dropdown">
+                        <i data-lucide="cog"></i>
+                    </a>
+                    <a class="navbar-right-button" tooltip="notifications" id="notif-button" dropdown-button="notifs-dropdown">
+                        <i data-lucide="bell"></i>
+                    </a>
+
+                    <div dropdown-mode="legacy" dropdown="notifs-dropdown" id="notifications-overlay" class="notifications-overlay">
+                        <h1>
+                            <i data-lucide="bell"></i>
+                            Notifications
+                            <?php
+                            if($unreadNotifs > 0) {
+                                ?>
+                            <div class="notification-pill" id="notif-pill">
+                                <?= $unreadNotifs ?>
+                            </div>
+                            <?php
+                            }
+                            ?>
+                        </h1>
+                        <div id="notifications" class="notification-list"></div>
+                    </div>
+                    <?php
+                }
+                ?>
+
+                <div dropdown-mode="legacy" dropdown="settings-dropdown"
+                     class="navbar-pfp-dropdown navbar-pfp-dropdown-hidden">
                     <h1 langkey="navbar/settings.h1">Settings</h1>
                     <label setting-item="medals.hideUnachievedMedals" class="toggle-text navbar-pfp-dropdown-item"
                            for="checkbox">
@@ -47,12 +97,13 @@ use Database\Session; ?>
                 <button dropdown-button="pfp-dropdown"><img class="pfp"
                                                             src="<?= Database\Session::GetPFP() ?>"
                                                             alt="Your Profile Picture"></button>
-                <div dropdown-mode="legacy" dropdown="pfp-dropdown" class="navbar-pfp-dropdown navbar-pfp-dropdown-hidden"
+                <div dropdown-mode="legacy" dropdown="pfp-dropdown"
+                     class="navbar-pfp-dropdown navbar-pfp-dropdown-hidden"
                      id="navbar-profile-dropdown">
                     <?php
                     if (Session::LoggedIn()) {
                         ?>
-                        <div class="navbar-pfp-dropdown-header">
+                        <a class="navbar-pfp-dropdown-header" href="https://osekai.net/profiles?user=<?= Session::UserData()['id'] ?>">
                             <img src="<?= Database\Session::UserData()['avatar_url'] ?>"
                                  alt="Your Profile Picture">
                             <div>
@@ -61,9 +112,11 @@ use Database\Session; ?>
                                     <div id="roles"></div>
                                 </h1>
                             </div>
-                        </div>
-                        <a href="https://osekai.net/profiles?user=<?= Session::UserData()['id'] ?>" class="navbar-pfp-dropdown-item"><i data-lucide="user"></i>Your Profile</a>
-                        <a href="https://osu.ppy.sh/u/<?= Session::UserData()['id'] ?>" class="navbar-pfp-dropdown-item"><i data-lucide="user"></i>Your Profile on osu!</a>
+                        </a>
+                        <a href="https://osekai.net/profiles?user=<?= Session::UserData()['id'] ?>"
+                           class="navbar-pfp-dropdown-item"><i data-lucide="user"></i>Your profile</a>
+                        <a href="https://osu.ppy.sh/u/<?= Session::UserData()['id'] ?>"
+                           class="navbar-pfp-dropdown-item"><i data-lucide="user"></i>Your profile on osu!</a>
                         <a href="/logout" class="navbar-pfp-dropdown-item"><i data-lucide="log-out"></i>Log Out</a>
                     <?php } else {
                         ?>
@@ -80,6 +133,14 @@ use Database\Session; ?>
     <div class="navbar-trim">
 
     </div>
+</div>
+<div dropdown-mode="legacy" dropdown="apps-dropdown" class="apps-dropdown navbar-apps-dropdown">
+    <?php foreach ($nav as $url => $item) { ?>
+        <a href="<?= $url ?>" class="<?= !empty($item['active']) ? 'active' : '' ?>">
+            <?php if ($item['icon']) { ?><img src="<?= $item['icon'] ?>" alt=""><?php } ?>
+            <?= $item['label'] ?>
+        </a>
+    <?php } ?>
 </div>
 <div class="page-container" id="main">
     <?= $page; ?>

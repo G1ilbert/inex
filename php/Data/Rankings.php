@@ -5,6 +5,7 @@ namespace Data;
 use API\Osu\User;
 use API\Response;
 use Database\Connection;
+use Database\Session;
 
 class Rankings
 {
@@ -229,6 +230,21 @@ ORDER BY Rankings_Users.Count_Medals DESC";
         foreach ($data as &$row) {
             if (isset($row['Medal_Data'])) {
                 $row['Medal_Data'] = json_decode($row['Medal_Data'], true);
+            }
+        }
+
+        if ($rankingType === "medals_rarity") {
+            if (Session::LoggedIn()) {
+                $medals = Session::UserData()['user_achievements'];
+                $medalIds = array_column($medals, 'achievement_id');
+
+                foreach ($data as &$row) {
+                    $row['Achieved'] = in_array($row['Medal_ID'], $medalIds);
+                }
+            } else {
+                foreach ($data as &$row) {
+                    $row['Achieved'] = false;
+                }
             }
         }
 

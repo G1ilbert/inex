@@ -59,8 +59,13 @@ if ($cur_medal == null) {
             </div>
             <div class="homepage" id="medal-home">
                 <div class="hp-navbar">
-                    <img src="/public/img/branding/icon_monochrome.svg">
-                    <h1>Welcome back to Osekai Medals!</h1>
+                    <img src="/public/img/branding/app-fill/medals.svg">
+                    <h1>Welcome back to Osekai Medals<?php
+                    if(\Database\Session::LoggedIn()) {
+                        echo ", " . \Database\Session::UserData()['username'];
+                    }
+                    ?>!
+                    </h1>
                 </div>
                 <?php
                 $new = [];

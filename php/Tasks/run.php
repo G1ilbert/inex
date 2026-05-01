@@ -38,6 +38,8 @@ AddRunner("beatmappacks", new Runners\BeatmapPacks());
 
 AddRunner("preparelocalization", new Runners\PrepareLocalization());
 
+AddRunner("views", new Runners\Views());
+
 
 if (count($argv) < 3) {
     echo "Available Runners:\n";

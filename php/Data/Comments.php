@@ -3,6 +3,7 @@
 namespace Data;
 
 use API\Response;
+use Data\Notifications\Types\Comment;
 use Database\Connection;
 use Database\Session;
 use Woeler\DiscordPhp\Message\DiscordEmbedMessage;
@@ -23,12 +24,17 @@ class Comments
         Connection::execOperation("INSERT INTO `Common_Comments` (`Target_ID`, `Target_Table`, `User_ID`, `Parent_Comment_ID`, `Text`, `Date`, `Is_Pinned`)
 VALUES (?, ?, ?, ?, ?, now(), '0');", "isiis", [$id, $table, Session::UserData()['id'], $replyingTo, $text]);
 
+        $comment = Connection::execSimpleSelect("SELECT * FROM `Common_Comments` WHERE ID = LAST_INSERT_ID()")[0];
+        (new Comment($comment, $table === "Medals_Data" ? "medals" : "user"))->Send();
+
+
         return new Response(true, "", self::Get($id, $table, $replyingTo, $text)->content[0]);
     }
 
-    public static function GetOne($id) {
+    public static function GetOne($id)
+    {
         $comment = Connection::execSelect("SELECT * FROM Common_Comments WHERE ID = ? AND Deleted = 0", "i", [$id]);
-        if(count($comment) > 0) return $comment[0];
+        if (count($comment) > 0) return $comment[0];
         return null;
     }
 
@@ -47,7 +53,7 @@ VALUES (?, ?, ?, ?, ?, now(), '0');", "isiis", [$id, $table, Session::UserData()
             $types .= "s";
             $values[] = $single;
         }
-        if($parent != null) {
+        if ($parent != null) {
             $types .= "i";
             $values[] = $parent;
         }
@@ -96,7 +102,7 @@ ORDER BY Is_Pinned DESC, VoteCount DESC, Replies DESC";
         $user_name = "Anonymous";
         $user_id = 0;
 
-        if(Session::LoggedIn()) {
+        if (Session::LoggedIn()) {
             $user_name = Session::UserData()['username'];
             $user_id = Session::UserData()['id'];
         }
@@ -121,7 +127,7 @@ ORDER BY Is_Pinned DESC, VoteCount DESC, Replies DESC";
 
     public static function AdminDelete($id)
     {
-        if(!OsekaiUsers::HasPermission("comments.delete.any")) return new Response(false, "no");
+        if (!OsekaiUsers::HasPermission("comments.delete.any")) return new Response(false, "no");
 
         return self::Delete($id, true);
     }
@@ -132,7 +138,7 @@ ORDER BY Is_Pinned DESC, VoteCount DESC, Replies DESC";
 
         $comment = self::GetOne($id);
 
-        if($comment['User_ID'] !== Session::UserData()['id'] && !$skipCheck) return new Response(false, "Not your comment, silly");
+        if ($comment['User_ID'] !== Session::UserData()['id'] && !$skipCheck) return new Response(false, "Not your comment, silly");
 
         Connection::execOperation("UPDATE Common_Comments SET Deleted = 1 WHERE ID = ?", "i", [$id]);
 
@@ -141,7 +147,7 @@ ORDER BY Is_Pinned DESC, VoteCount DESC, Replies DESC";
 
     public static function Pin($id)
     {
-        if(!OsekaiUsers::HasPermission("comments.pin")) return new Response(false, "no");
+        if (!OsekaiUsers::HasPermission("comments.pin")) return new Response(false, "no");
 
 
         Connection::execOperation("UPDATE Common_Comments
@@ -149,5 +155,13 @@ SET Is_Pinned = IF(Is_Pinned = 1, 0, 1)
 WHERE ID = ?", "i", [$id]);
 
         return new Response(true, "ok");
+    }
+
+    public static function GetItemFromComment($comment)
+    {
+        $ref = explode("_", $comment['ID']);
+        if ($ref[0] == "medals") return Connection::execSelect("SELECT * FROM Medals_Data WHERE Medal_ID = ?", "i", [$ref[1]])[0];
+        if ($ref[0] == "user") return Connection::execSelect("SELECT * FROM Rankings_Users WHERE ID = ?", "i", [$ref[1]])[0];
+        throw new \Exception('Unexpected type ' . json_encode($ref));
     }
 }

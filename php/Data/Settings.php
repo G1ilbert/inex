@@ -12,7 +12,7 @@ namespace Data {
         {
             if (is_null($id)) {
                 if(Database\Session::LoggedIn()) {
-                    $id = Database\Session::UserData()['ID'];
+                    $id = Database\Session::UserData()['id'];
                 } else {
                     return [];
                 }
@@ -34,7 +34,7 @@ namespace Data {
 
             $oldsettings[$key] = $value;
 
-            Database\Connection::execOperation('UPDATE System_Users_Settings SET Settings = ? WHERE User_ID = ?', "si", [json_encode($oldsettings), Database\Session::UserData()['ID']]);
+            Database\Connection::execOperation('UPDATE System_Users_Settings SET Settings = ? WHERE User_ID = ?', "si", [json_encode($oldsettings), Database\Session::UserData()['id']]);
             return new Response(true);
         }
         public static function GetSetting($settingname, $default) {

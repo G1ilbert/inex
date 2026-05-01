@@ -1,0 +1,176 @@
+.notifications-overlay {
+    position: fixed;
+    top: var(--navbar-height);
+    bottom: 0;
+    width: 450px;
+    max-width: 90vw;
+    right: 0;
+    background: var(--col-d2);
+    border-left: 1px solid var(--col-l4);
+    z-index: 01189998819991197253;
+    &:not(.jsdropdown-open) {
+        transform: translateX(100%);
+    }
+    transition: transform 0.3s ease;
+    h1 {
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        svg {
+            width: 44px;
+            height: 44px;
+        }
+    }
+    overflow-y: scroll;
+}
+
+body:has(.notifications-overlay.jsdropdown-open) #main {
+    transform: translateX(-450px);
+}
+
+body:has(.notifications-overlay) #main {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+body:has(.notifications-overlay.jsdropdown-open) {
+    overflow-y: hidden;
+}
+
+
+
+.notification-list {
+    padding: 10px;
+    padding-top: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    height: 100%;
+}
+.notification {
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: hsl(var(--ahue), 92%, 70%);
+    padding-left: 10px;
+    border-radius: var(--border-radius);
+    transition: all 0.2s ease;
+}
+.notification.unread {
+    outline: 2px solid hsl(var(--ahue), 60%, 40%);
+}
+.notification.unread .notification-upper {
+    background-color: var(--col-l4);
+}
+.notification:hover {
+    padding-left: 15px;
+    background-color: hsl(var(--ahue), 100%, 60%) !important;
+}
+.notification:hover .notification-upper {
+    background-color: var(--col-l3);
+}
+
+.notification-right {
+    border-radius: var(--border-radius) calc(var(--border-radius) - 4px) calc(var(--border-radius) - 4px) var(--border-radius);
+    background-color: var(--col-l1);
+}
+
+.notification-upper {
+    transition: all 0.2s ease;
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    background-color: var(--col-l2);
+    border-radius: var(--border-radius) calc(var(--border-radius) - 4px) calc(var(--border-radius) - 4px) var(--border-radius);
+    overflow: hidden;
+    position: relative;
+}
+
+.notification-upper svg {
+    margin: 0px 12px;
+    height: 32px;
+    width: auto;
+    stroke-width: 1.5px;
+    color: hsl(var(--ahue), 92%, 85%);
+    mix-blend-mode: lighten;
+}
+
+.notification-upper object {
+    font-size: 20px;
+}
+.notification-upper small {
+    font-size: 18px;
+    line-height: 1;
+    color: var(--col-text-darker);
+}
+.notification-upper h6 {
+    font-size: 14px;
+    margin-top: 6px;
+    color: var(--col-text-l1-5);
+    font-weight: 400;
+
+}
+
+.notification-upper > div {
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0px;
+    z-index: 4;
+    position: relative;
+}
+
+.notification-upper > .backdrop {
+    position: absolute;
+    left: 0;
+    width: auto;
+    min-height: 160px;
+    height: 100%;
+    object-fit: cover;
+
+    mask-image: radial-gradient(100% 129.4% at 0% 0%, #D9D9D9 0%, rgba(150, 150, 150, 0.339766) 49.16%, rgba(117, 117, 117, 0.0149381) 82.09%, rgba(115, 115, 115, 0) 100%);
+    opacity: 0.4;
+}
+.notification-upper > .preview {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    margin-left: auto;
+}
+.notification-extra {
+    padding: 10px;
+    border-radius: var(--border-radius);
+    margin-top: -10px;
+    padding-top: 20px;
+    padding-left: 25px;
+}
+
+.notification-extra-comment {
+    display: flex;
+    align-items: center;
+}
+
+.notification-extra-comment .pfp {
+    height: 32px;
+    width: 32px;
+    border-radius: 90px;
+    margin-right: 9px;
+}
+.notification-extra-comment p {
+    font-size: 16px;
+    color: var(--col-text-l1)
+}
+
+.notification-extra-comment.faded {
+    margin-bottom: 10px;
+}
+.notification-extra-comment.faded img {
+    filter: grayscale(0.2);
+    transform: scale(0.8);
+}
+.notification-extra-comment.faded p {
+    color: var(--col-text-l2);
+    opacity: 0.8;
+    font-size: 16px;
+}

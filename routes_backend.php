@@ -168,3 +168,12 @@ $router->all("/api/rankings/add", function () {
 $router->all("/api/profiles/{id}", function ($id) {
     echo \Data\Profiles::Get($id)->ReturnJson();
 });
+
+
+$router->all("/api/notifications", function () {
+    echo Data\Notifications\Utils::Get(50, $_POST['offset'])->ReturnJson();
+});
+
+$router->all("/api/notifications/readall", function () {
+    Data\Notifications\Utils::SetRead(json_decode($_POST['items']));
+});

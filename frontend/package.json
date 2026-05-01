@@ -45,6 +45,7 @@
     "colorthief": "^2.4.0",
     "core-js": "^3.33.2",
     "d3": "^7.9.0",
+    "dompurify": "^3.4.2",
     "fantasticon": "^3.0.0",
     "html2canvas": "^1.4.1",
     "javascript-time-ago": "^2.5.9",

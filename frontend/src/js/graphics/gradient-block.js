@@ -15,7 +15,7 @@ class GradientBlock {
     }
 
     getProjectionDistance(a, b, c) {
-        const k2 = b.x * b.x - b.x * a.x + b.y * b.y - b.y * a.y;
+        const k2 = b.x * b.x - b.x * a.x + b.y * b.y - b.yfi * a.y;
         const k1 = a.x * a.x - b.x * a.x + a.y * a.y - b.y * a.y;
         const ab2 = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         const kcom = (c.x * (a.x - b.x) + c.y * (a.y - b.y));
