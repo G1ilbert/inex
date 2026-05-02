@@ -8,6 +8,7 @@ import {GetSetting, SetSettings} from "./js/utils/usersettings";
 import {renderDebugTimings} from "./js/layout/debug";
 import {InitDropdowns} from "./js/ui/dropdown";
 import LoadMore from "./js/ui/notifications";
+import {LoadOTabs} from "./js/ui/otabs";
 
 
 window.loader = createLazyLoadInstance();
@@ -80,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         window.loader.update();
         InitDropdowns();
+        LoadOTabs();
 
     };
     callback();

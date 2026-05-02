@@ -1,0 +1,28 @@
+#!/bin/bash
+STOP=false
+
+cleanup() {
+    echo "stopping all processes..."
+    STOP=true
+    pkill -P $$ 2>/dev/null
+}
+
+trap cleanup SIGINT SIGTERM
+
+run_with_restart() {
+    local name=$1
+    shift
+    while true; do
+        [ "$STOP" = true ] && break
+        echo "starting $name..."
+        "$@" | sed "s/^/[$name] /"
+        [ "$STOP" = true ] && break
+        echo "$name crashed! restarting in 3 seconds..."
+        sleep 3
+    done
+    echo "$name stopped."
+}
+
+run_with_restart "AMPRA" bash -c "cd services/ampra && npm start" &
+
+wait

@@ -30,6 +30,11 @@ if(INSTANCE !== "dev") {
             </div>
         </div>
     </div>
+    <div class="panel hidden">
+        <pre id="json-test" style="width: 100%">
+
+        </pre>
+    </div>
 </div>
 <div class="panel hidden">
     <div id="medal-graph"></div>

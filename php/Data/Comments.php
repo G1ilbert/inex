@@ -2,6 +2,7 @@
 
 namespace Data;
 
+use Ampra\IO;
 use API\Response;
 use Data\Notifications\Types\Comment;
 use Database\Connection;
@@ -26,6 +27,20 @@ VALUES (?, ?, ?, ?, ?, now(), '0');", "isiis", [$id, $table, Session::UserData()
 
         $comment = Connection::execSimpleSelect("SELECT * FROM `Common_Comments` WHERE ID = LAST_INSERT_ID()")[0];
         (new Comment($comment, $table === "Medals_Data" ? "medals" : "user"))->Send();
+
+        $title = "";
+
+        if($table === "Medals_Data") {
+            $medal = Medals::Get($id);
+            $title = $medal['Name'];
+        }
+
+        IO::Send("/comment", [
+            "comment" => $comment,
+            "user" => Session::UserData(),
+            "url" => $table === "Medals_Data" ? "/medals/" . $id : "/user/" . $id,
+            "title" => $title
+        ]);
 
 
         return new Response(true, "", self::Get($id, $table, $replyingTo, $text)->content[0]);

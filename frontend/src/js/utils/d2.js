@@ -77,6 +77,9 @@ export class D2 {
         if (attr) {
             for (let key in attr) {
                 el.setAttribute(key, attr[key]);
+                if(key == "innerText") {
+                    el.innerText = attr[key];
+                }
             }
         }
         return el;

@@ -33,3 +33,6 @@ const BUCKET_ENDPOINT = "";
 const ACCESS_KEY_ID = "";
 const ACCESS_KEY_SECRET = "";
 const S3_URL_PATH = "";
+
+
+const USE_AMPRA = false;

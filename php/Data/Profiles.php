@@ -4,6 +4,7 @@ namespace Data;
 
 use API\Osu\User;
 use API\Response;
+use Database\Connection;
 use Debug\Timings;
 
 class Profiles
@@ -90,7 +91,37 @@ class Profiles
         ];
 
 
-
+        $osekaiUser = Connection::execSelect("
+    SELECT 
+        u.*,
+        r.Rank_Medals_Global,
+        r.Rank_Medals_Country,
+        r.Rank_PP_Total_Global,
+        r.Rank_PP_Total_Country,
+        r.Rank_PP_Stdev_Global,
+        r.Rank_PP_Stdev_Country
+    FROM Rankings_Users u
+LEFT JOIN (
+    SELECT
+        ru.ID,
+        ru.Country_Code,
+        ROW_NUMBER() OVER (
+            ORDER BY ru.Count_Medals DESC, md.Count_Achieved_By ASC
+        ) AS Rank_Medals_Global,
+        ROW_NUMBER() OVER (
+            PARTITION BY ru.Country_Code
+            ORDER BY ru.Count_Medals DESC, md.Count_Achieved_By ASC
+        ) AS Rank_Medals_Country,
+        ROW_NUMBER() OVER (ORDER BY ru.PP_Total DESC)                           AS Rank_PP_Total_Global,
+        ROW_NUMBER() OVER (PARTITION BY ru.Country_Code ORDER BY ru.PP_Total DESC) AS Rank_PP_Total_Country,
+        ROW_NUMBER() OVER (ORDER BY ru.PP_Stdev DESC)                           AS Rank_PP_Stdev_Global,
+        ROW_NUMBER() OVER (PARTITION BY ru.Country_Code ORDER BY ru.PP_Stdev DESC) AS Rank_PP_Stdev_Country
+    FROM Rankings_Users ru
+    LEFT JOIN Medals_Data md ON md.Medal_ID = ru.Rarest_Medal_ID
+    WHERE ru.Is_Restricted = 0
+) AS r ON r.ID = u.ID
+    WHERE u.ID = ?
+", "i", [$id])[0];
 
         return new Response(true, "ok", [
             "User" => $user,
@@ -99,6 +130,34 @@ class Profiles
                 "MedalPercentageOverTime" => [
                     "Relative" => $graph_medalPercentageOverTimeRelative,
                     "Total" => $graph_medalPercentageOverTimeTotal,
+                ]
+            ],
+            "Statistics" => [
+                "Medals" => [
+                    "TotalReleased" => $totalReleased,
+                    "TotalAchieved" => $totalAchieved,
+                    "Percentage" => round(($totalAchieved / $totalMedals) * 100, 2),
+                    "Ranks" => [
+                        "Global" => $osekaiUser['Rank_Medals_Global'],
+                        "Country" => $osekaiUser['Rank_Medals_Country'],
+                    ]
+                ],
+                "AllMode" => [
+                    "Stdev" => [
+                        "Global" => $osekaiUser['Rank_PP_Stdev_Global'],
+                        "Country" => $osekaiUser['Rank_PP_Stdev_Country'],
+                        "PP" => $osekaiUser['PP_Stdev'],
+
+                        "Accuracy" => $osekaiUser['Accuracy_Stdev'],
+                    ],
+                    "Total" => [
+                        "Global" => $osekaiUser['Rank_PP_Total_Global'],
+                        "Country" => $osekaiUser['Rank_PP_Total_Country'],
+                        "PP" => $osekaiUser['PP_Total'],
+                        "Accuracy" => $osekaiUser['Accuracy_Catch'] + $osekaiUser['Accuracy_Mania'] +
+                            $osekaiUser['Accuracy_Taiko'] + $osekaiUser['Accuracy_Standard']
+                    ],
+
                 ]
             ]
         ]);

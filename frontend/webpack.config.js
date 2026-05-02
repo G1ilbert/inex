@@ -36,7 +36,12 @@ function GenerateConfig() {
                     test: /\.css$/,
                     use: [
                         MiniCssExtractPlugin.loader,
-                        {loader: 'css-loader', options: {importLoaders: 1}},
+                        {loader: 'css-loader', options: {importLoaders: 1,
+
+                                url: {
+                                    filter: (url) => !url.startsWith('/')
+                                }
+                            }},
                         {
                             loader: 'postcss-loader',
                             options: {
